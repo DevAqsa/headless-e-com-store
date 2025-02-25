@@ -1,6 +1,7 @@
+/* eslint-disable react/prop-types */
 import { Link } from "react-router-dom"
 
-function Navbar() {
+function Navbar({cartItems}) {
   return <>
     <nav className="navbar navbar-expand-lg navbar-light bg-dark">
         <div className="container">
@@ -19,7 +20,7 @@ function Navbar() {
         <li className="nav-item">
           <Link to="/cart" className="nav-link">
             Cart
-            <span className="badge pill bg-secondary">0</span> 
+            <span className="badge pill bg-secondary">{cartItems.length}</span> 
           </Link>
         </li>
         

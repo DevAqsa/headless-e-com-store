@@ -1,40 +1,44 @@
 import { useNavigate } from "react-router-dom"
-import SingleProduct from "./SingleProduct"
+
 import { useState, useEffect } from "react" 
 
 
-function Cart() {
-    const [products, setProdcurts] = useState([])
+function Cart({onRemoveProduct, cart}) {
+    
+  const [cartItems, setCartItems] = useState(cart)
     const navigate = useNavigate();
 
-    useEffect(() => {
-
-        setProdcurts([
-            {
-                image: "public/washing-machine-2.jpg",
-                title: "Product 1",
-                price: 10.99,
-                quantity: 2
-            },
-            {
-                image: "public/washing-machine-2.jpg",
-                title: "Product 2",
-                price: 20.99,
-                quantity: 1
-            },
-            {
-                image: "public/washing-machine-2.jpg",
-                title: "Product 3",
-                price: 30.99,
-                quantity: 3
-            }
-        ])
-
-    }, [])
+    
 
 const goToCheckOutPage = () => {
     navigate('/CheckOut')
 }
+
+useEffect(() => {
+    setCartItems(cart)
+    }, [cart])
+
+    //return product price / sale price value
+    const renderProductPrice = (product) => {
+        
+      if(product.sale_price){
+        return <>
+        <span className='text-muted text-decoration-line-through'>${product.regular_price}</span>
+        <span className='text-danger'>{product.sale_price}</span>
+        </>
+      }
+
+      return <span>${product.regular_price || product.price}</span>
+    }
+
+    //calculate the total items price in the cart
+    const calculateTotalItemsPrice = () => {
+        
+       return cartItems.reduce((total,item) => {
+          const price = item.price ? parseFloat(item.price) : 0
+          return total + (price * item.quantity)
+        },0).toFixed(2)
+    }
 
   return <>
   <div className="container">
@@ -46,22 +50,22 @@ const goToCheckOutPage = () => {
           <tr>
             <th>Image</th>
             <th>Product</th>
-            <th>Price</th>
+            <th>Unit Price</th>
             <th>Quantity</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
          {
-            products.map((SingleProduct, index) =>
+            cartItems.map((SingleProduct, index) =>
             <tr key={index}>
-            <td><img src={SingleProduct.image} alt="Product Name" style={{width: '50px'}} /></td>
-            <td>{SingleProduct.title}</td>
-            <td>{SingleProduct.price}</td>
+            <td><img src={SingleProduct?.images[0].src} alt={SingleProduct} style={{width: '50px'}} /></td>
+            <td>{SingleProduct.name}</td>
+            <td>{renderProductPrice(SingleProduct)}</td>
             <td>{SingleProduct.quantity}</td>
             <td>
               
-              <button className="btn btn-danger">Remove</button>
+              <button className="btn btn-danger" onClick={() => onRemoveProduct(SingleProduct)}>Remove</button>
             </td>
           </tr>
             )
@@ -73,7 +77,7 @@ const goToCheckOutPage = () => {
       </table>
       <div className="row align-items-center">
         <div className="col">
-          <h3>Total: $50.00</h3>
+          <h3>Total: ${ calculateTotalItemsPrice() }</h3>
         </div>
         <div className="col text-end">
           
@@ -84,7 +88,11 @@ const goToCheckOutPage = () => {
   
     
     <div id="empty-cart-message">
-      <p>Your cart is empty.</p>
+      {
+        cartItems.length > 0 ? null : 
+        <p>Your cart is empty.</p>
+      }
+      
     </div>
   </div>
   

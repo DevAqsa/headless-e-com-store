@@ -8,7 +8,7 @@ function Home() {
         navigate('/products')
     }
   return <>
-  <div className='container'>
+ 
     
     <div  className="hero-banner">
       <img src={mallImage} alt="Hero Banner"  className="img-fluid" />
@@ -49,7 +49,7 @@ function Home() {
         </div>
       </div>
     </div>
-  </div>
+  
   </>
     
   
