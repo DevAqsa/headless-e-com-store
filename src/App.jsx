@@ -14,13 +14,25 @@ import SingleProduct from './pages/SingleProduct'
 import './Api.js'
 import Footer from './layouts/Footer.jsx'
 import Loader from './layouts/Loader.jsx'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ToastContainer, toast } from 'react-toastify'
 
 
 function App() {
   const [loader, setLoader] = useState(false)
   const [cart, setCart] = useState([])
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+useEffect(() => {
+  const token = localStorage.getItem('token')
+  if(token){
+    setUserLoggedInStatus(true)
+  }
+
+  const cart = JSON.parse(localStorage.getItem('cart')) || []
+  setCart(cart)
+}, [])
+
 
   const setPageLoading =(status) => {
     setLoader(status)
@@ -60,11 +72,33 @@ function App() {
       localStorage.setItem('cart', JSON.stringify(updateCart))
       toast.error('Product removed from cart!')
   }
-}
+  }
+
+  //set user authentication status after login
+  const setUserLoggedInStatus = (status) => {
+    setIsAuthenticated(status)
+  }
+
+  //logout user
+  const setUserLogout = () => {
+    localStorage.removeItem('token')
+    setUserLoggedInStatus(false)
+    toast.success('User logged out successfully!')
+  }
+
+  //remove cart items
+  const clearCartItems = () => {
+    localStorage.removeItem('cart')
+    setCart([])
+    // toast.success('Cart items removed!')
+  }
+
+
+
   return (
     <>
     <Router>
-     <Navbar cartItems={cart} />
+     <Navbar setUserLogout={setUserLogout} isAuthenticated={isAuthenticated} cartItems={cart} />
      <div className='container'>
 
       <ToastContainer/>
@@ -73,10 +107,10 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/products" element={<Products onAddToCart={addProductsToCart} setPageLoading={setPageLoading} />} />
       <Route path="/cart" element={<Cart onRemoveProduct={removeItemFromCart} cart={cart} />} />
-      <Route path="/CheckOut" element={<CheckOut />} />
+      <Route path="/CheckOut" element={<CheckOut clearCartItems={clearCartItems} />} />
       <Route path="/my-orders" element={<MyOrders />} />
       <Route path="/my-account" element={<MyAccount />} />
-      <Route path="/login" element={<Auth />} />
+      <Route path="/login" element={<Auth isAuthenticated={setUserLoggedInStatus} setPageLoading={setPageLoading} />} />
       <Route path="/product/:id" element={<SingleProduct onAddToCart={addProductsToCart} setPageLoading={setPageLoading}/>} />
      </Routes>
      </div>

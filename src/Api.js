@@ -10,6 +10,8 @@ const PROJECT_URL ="http://headless-store.local/"
 
 const API_URL = PROJECT_URL + "wp-json/wc/v3"
 
+const WP_USER_API_URL = `${PROJECT_URL}wp-json/wp/v2/users`
+
 // Function to generate OAuth
 const generateOAuthSignature = (url, method = 'GET', params = {}) => {
     const nonce = Math.random().toString(36).substring(2);
@@ -73,6 +75,79 @@ export const getSingleProductData = async (id) => {
     return response.data;
   }
   catch (error) {
+    console.log(error)
+  }
+}
+
+
+//registert user api
+export const registerStoreUser = async (userInfo) => {
+
+  try {
+       const response = await api.post(WP_USER_API_URL, userInfo, {
+       headers: {
+      "Authorization" : "Basic " + btoa("headless-store:store")
+  }
+})
+
+return response.data;
+
+}catch (error) {
+    console.log(error)
+  }
+}
+
+//login user api
+export const loginUser = async (userInfo) => {
+
+  try{
+
+    const response = await api.post(`${PROJECT_URL}wp-json/jwt-auth/v1/token`, userInfo)
+    return response.data;
+
+}catch (error) {
+    console.log(error)
+  }
+}
+
+export const createAnOrder = async(userInfo) => {
+  try{
+
+    const cartItems = JSON.parse(localStorage.getItem("cart")) || []
+    
+    // Check cart items
+    if(!cartItems.length){
+      console.log("Cart is empty")
+      return false
+    }
+
+    const lineItems = cartItems.map( (item) => ({
+      product_id: item.id,
+      quantity: item.quantity
+    }) )
+
+    const data = {
+      ...userInfo,
+      line_items: lineItems
+    }
+
+    const url = `${API_URL}/orders`
+
+    const oauthParams = generateOAuthSignature(url, "POST")
+
+    // Generate Oauth Header
+    const oauthHeader = Object.keys(oauthParams)
+    .map( (key) => `${key}=${encodeURIComponent(oauthParams[key])}` )
+    .join(", ")
+
+    const response = await api.post("/orders", data, {
+      headers: {
+        Authorization: `OAuth ${oauthHeader}`
+      }
+    })
+
+    return response.data
+  } catch(error){
     console.log(error)
   }
 }

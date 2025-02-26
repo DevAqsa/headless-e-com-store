@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { Link } from "react-router-dom"
 
-function Navbar({cartItems}) {
+function Navbar({cartItems, isAuthenticated, setUserLogout}) {
   return <>
     <nav className="navbar navbar-expand-lg navbar-light bg-dark">
         <div className="container">
@@ -24,19 +24,28 @@ function Navbar({cartItems}) {
           </Link>
         </li>
         
-        <li className="nav-item">
+        {
+
+          isAuthenticated ? (
+            <>
+            <li className="nav-item">
           <Link to="/my-account" className="nav-link">My Account</Link>
         </li>
         <li className="nav-item">
           <Link to="/my-orders" className="nav-link">My Orders</Link>
         </li>
         <li className="nav-item">
-          <Link to="/" className="nav-link" onClick="handleLogout()">Logout</Link> 
+          <Link to="/" className="nav-link" onClick={setUserLogout}>Logout</Link> 
         </li>
-     
-        <li className="nav-item">
+            </>
+          ) : (
+            <li className="nav-item">
           <Link to="/login" className="nav-link">Login/Signup</Link>
         </li>
+          )
+
+        }
+        
       </ul>
     </div>
     </div>
