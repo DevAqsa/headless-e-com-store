@@ -115,7 +115,7 @@ useEffect(() => {
       <Route path="/products" element={<Products onAddToCart={addProductsToCart} setPageLoading={setPageLoading} />} />
       <Route path="/cart" element={<Cart onRemoveProduct={removeItemFromCart} cart={cart} />} />
       <Route path="/CheckOut" element={<CheckOut loggedInUserData={loggedInUserData} clearCartItems={clearCartItems} />} />
-      <Route path="/my-orders" element={<MyOrders loggedInUserData={loggedInUserData} />} />
+      <Route path="/my-orders" element={<MyOrders loggedInUserData={loggedInUserData} setPageLoading={setPageLoading}/>} />
       <Route path="/my-account" element={<MyAccount loggedInUserData={loggedInUserData}/>} />
       <Route path="/login" element={<Auth setLoggedInUserData={setLoggedInUserData} isAuthenticated={setUserLoggedInStatus} setPageLoading={setPageLoading} />} />
       <Route path="/product/:id" element={<SingleProduct onAddToCart={addProductsToCart} setPageLoading={setPageLoading}/>} />
