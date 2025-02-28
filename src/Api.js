@@ -151,3 +151,45 @@ export const createAnOrder = async(userInfo) => {
     console.log(error)
   }
 }
+
+//to get user Data
+export const getLoggedInUserData = async(token) => {
+
+  try{
+    const response = await api.get(`${WP_USER_API_URL}/me`,{
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+  
+    return response.data
+
+  }catch(error){
+    console.log(error)
+  }
+}
+
+
+// Fetch all Orders by User Id
+export const getOrdersByUserId = async(userId) => {
+
+  try{
+
+    const url = `${API_URL}/orders`
+
+    const oauthParams = generateOAuthSignature(url, "GET", {
+      customer: userId
+    })
+
+    const response = await api.get("/orders", {
+     params : {
+      ...oauthParams,
+      customer: userId
+     }
+    })
+
+    return response.data
+  } catch(error){
+    console.log(error)
+  }
+}

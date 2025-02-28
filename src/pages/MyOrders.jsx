@@ -1,9 +1,36 @@
+/* eslint-disable react/prop-types */
 import { useState } from "react"
+import { getOrdersByUserId } from "../Api"
+import { useEffect } from "react"
 
-function Myorders() {
+function Myorders({LoggedInUserData}) {
 
 const [showDetailModal, setShowDetailModal] = useState(false)
+const [orderItems, setOrderItems] = useState([])
 
+const fetchAllOrders = async() => {
+
+  try{
+
+    const userdata = JSON.parse(localStorage.getItem(LoggedInUserData))
+
+    const response = await getOrdersByUserId(userdata.id)
+    console.log(response)
+    setOrderItems(response)
+    
+
+    // localStorage.setItem("orderItems", JSON.stringify(response))
+  } catch(error){
+
+    console.log(error)
+  } 
+}
+
+useEffect( () => {
+
+  fetchAllOrders()
+
+}, [])
 
   return <>
   <div className="container">
@@ -19,7 +46,7 @@ const [showDetailModal, setShowDetailModal] = useState(false)
         <thead>
           <tr>
             <th>Order ID</th>
-            <th>Date</th>
+            <th>Date(M/D/Y)</th>
             <th>Status</th>
             <th>Total</th>
             <th>Items</th>
@@ -27,15 +54,20 @@ const [showDetailModal, setShowDetailModal] = useState(false)
           </tr>
         </thead>
         <tbody id="orders-list">
-          <tr>
-            <td>12345</td>
-            <td>12/30/2024</td>
-            <td>Completed</td>
-            <td>$50.00</td>
+
+          {
+            orderItems.map((singleOrder) => (
+              <tr key={singleOrder.id}>
+            <td>{ singleOrder.id }</td>
+            <td> {new Date(singleOrder.date_created).toLocaleDateString() }</td>
+            <td>{ singleOrder.status.charAt(0).toUpperCase() + singleOrder.status.slice(1) }</td>
+            <td>{ singleOrder.currency_symbol } { singleOrder.total }</td>
             <td>
               <ul>
-                <li>Item 1 (x2)</li>
-                <li>Item 2 (x1)</li>
+              {
+                  singleOrder.line_items.map( (item) => ( <li key={ item.id }>{item.name} ({item.quantity})</li> ) )
+                }
+                
               </ul>
             </td>
             <td>
@@ -43,7 +75,10 @@ const [showDetailModal, setShowDetailModal] = useState(false)
               <button className="btn btn-danger">Delete</button>
             </td>
           </tr>
-          {/* <!-- Add more orders as needed --> */}
+       
+            ))
+          }
+          
         </tbody>
       </table>
     </div>

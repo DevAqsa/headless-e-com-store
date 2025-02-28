@@ -4,11 +4,14 @@ import {createAnOrder} from "../Api.js"
 import { toast } from "react-toastify"
 import {useNavigate} from 'react-router-dom'
 
-function CheckOut({clearCartItems}) {
+function CheckOut({clearCartItems, loggedInUserData}) {
 
     const navigate = useNavigate()
 
+    const userData = JSON.parse(loggedInUserData) || {}
+
     const [checkoutData, setCheckoutData] = useState  ({
+      customer_id : userData.id || 0,
       payment_method: "cod",
       payment_method_title: "Cah on Delivery",
       set_paid: false,
@@ -21,7 +24,7 @@ function CheckOut({clearCartItems}) {
         state: "",
         postcode: "",
         country: "",
-        email: "",
+        email: userData.email || "",
         phone: "",
       }
         

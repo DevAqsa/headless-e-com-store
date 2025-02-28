@@ -1,10 +1,10 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
-import { registerStoreUser, loginUser } from "../Api.js";
+import { registerStoreUser, loginUser, getLoggedInUserData } from "../Api.js";
 import { toast } from "react-toastify";
 import {useNavigate} from 'react-router-dom'
 
-function Auth({ setPageLoading, isAuthenticated }) {
+function Auth({ setPageLoading, isAuthenticated, setLoggedInUserData }) {
 
   const navigate = useNavigate();
 
@@ -49,9 +49,28 @@ function Auth({ setPageLoading, isAuthenticated }) {
 
       localStorage.setItem("token", response.token);
    
-      toast.success("User logged in successfully!");
+     
       isAuthenticated(true);
-      navigate("/checkout");
+
+
+      //get user Data
+      const  loggedInUserData   = {}
+      const UserData = await getLoggedInUserData (response.token);
+      console.log(UserData);
+
+      loggedInUserData.id = UserData.id;
+      loggedInUserData.name = UserData.name;
+      loggedInUserData.email = response.user_email;
+      loggedInUserData.username = response.user_nicename;
+
+      localStorage.setItem("user_data", JSON.stringify(loggedInUserData));
+
+      toast.success("User logged in successfully!");
+
+      setLoggedInUserData(JSON.stringify(loggedInUserData))
+
+      navigate("/products");
+
     } catch (error) {
       console.log(error);
       toast.error("Invalid username or password");

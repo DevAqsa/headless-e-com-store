@@ -22,6 +22,7 @@ function App() {
   const [loader, setLoader] = useState(false)
   const [cart, setCart] = useState([])
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [loggedInUserData, setLoggedInUserData] = useState({})
 
 useEffect(() => {
   const token = localStorage.getItem('token')
@@ -31,6 +32,11 @@ useEffect(() => {
 
   const cart = JSON.parse(localStorage.getItem('cart')) || []
   setCart(cart)
+
+
+  const userData = (localStorage.getItem('user_data'))
+  setLoggedInUserData(userData)
+  
 }, [])
 
 
@@ -82,6 +88,7 @@ useEffect(() => {
   //logout user
   const setUserLogout = () => {
     localStorage.removeItem('token')
+    localStorage.removeItem('userData')
     setUserLoggedInStatus(false)
     toast.success('User logged out successfully!')
   }
@@ -107,10 +114,10 @@ useEffect(() => {
       <Route path="/" element={<Home />} />
       <Route path="/products" element={<Products onAddToCart={addProductsToCart} setPageLoading={setPageLoading} />} />
       <Route path="/cart" element={<Cart onRemoveProduct={removeItemFromCart} cart={cart} />} />
-      <Route path="/CheckOut" element={<CheckOut clearCartItems={clearCartItems} />} />
-      <Route path="/my-orders" element={<MyOrders />} />
-      <Route path="/my-account" element={<MyAccount />} />
-      <Route path="/login" element={<Auth isAuthenticated={setUserLoggedInStatus} setPageLoading={setPageLoading} />} />
+      <Route path="/CheckOut" element={<CheckOut loggedInUserData={loggedInUserData} clearCartItems={clearCartItems} />} />
+      <Route path="/my-orders" element={<MyOrders loggedInUserData={loggedInUserData} />} />
+      <Route path="/my-account" element={<MyAccount loggedInUserData={loggedInUserData}/>} />
+      <Route path="/login" element={<Auth setLoggedInUserData={setLoggedInUserData} isAuthenticated={setUserLoggedInStatus} setPageLoading={setPageLoading} />} />
       <Route path="/product/:id" element={<SingleProduct onAddToCart={addProductsToCart} setPageLoading={setPageLoading}/>} />
      </Routes>
      </div>

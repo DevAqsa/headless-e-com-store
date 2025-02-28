@@ -1,6 +1,11 @@
+/* eslint-disable react/prop-types */
 
 
-function MyAccount() {
+function MyAccount({loggedInUserData}) {
+
+
+  const userdata = JSON.parse(loggedInUserData)
+
   return <>
 
 <div className="container">
@@ -14,7 +19,7 @@ function MyAccount() {
               type="text"
               id="formName"
               className="form-control"
-              value="John Doe"  
+              value={userdata.name} 
               readOnly
             />
           </div>
@@ -27,7 +32,7 @@ function MyAccount() {
               type="email"
               id="formEmail"
               className="form-control"
-              value="johndoe@example.com"  
+              value={userdata.email} 
               readOnly
             />
           </div>
@@ -40,7 +45,8 @@ function MyAccount() {
               type="text"
               id="formUsername"
               className="form-control"
-              value="johndoe"  
+              value={userdata.username}  
+              readOnly
             />
           </div>
         </div>
